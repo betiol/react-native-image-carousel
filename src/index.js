@@ -427,7 +427,7 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		return (
 			<View style={{ padding: 5 }}>
 				<FlatList
-					ListHeaderComponent={this.renderDefaultHeader}
+					ListHeaderComponent={this.state.fullscreen ? this.renderDefaultHeader : null}
 					keyExtractor={this._keyExtractor}
 					data={this.getChildren()}
 					numColumns={4}
