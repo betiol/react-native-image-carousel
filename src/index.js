@@ -162,7 +162,6 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		this.setState({ animating: true });
 
 		(activeComponent: $FlowFixMe).measure(
-			// eslint-disable-next-line max-params
 			(rx: number, ry: number, width: number, height: number, x: number, y: number) => {
 				this.setState({
 					origin: { x, y, width, height },
@@ -297,7 +296,6 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 	renderFullscreenContent = (child: React$Element<*>, idx: number) => {
 		const { renderContent, zoomEnabled } = this.props;
 		const { selectedIdx, panning } = this.state;
-
 		const content = renderContent && renderContent(idx);
 		const containerStyle = [ this.getSwipeableStyle(idx), selectedIdx === idx && panning && { top: this.pan } ];
 
@@ -333,11 +331,13 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 	};
 
 	renderDefaultHeader = () => (
-		<TouchableWithoutFeedback onPress={this.close}>
-			<View>
-				<Text style={styles.closeText}>Close</Text>
-			</View>
-		</TouchableWithoutFeedback>
+		<View>
+			<TouchableWithoutFeedback onPress={this.close}>
+				<View>
+					<Text style={styles.closeText}>{this.props.closeText || 'Close'}</Text>
+				</View>
+			</TouchableWithoutFeedback>
+		</View>
 	);
 
 	getFullscreenOpacity = () => {
@@ -390,24 +390,24 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		);
 	};
 
-	_renderChildWithFlatList = ({ item, idx }) => {
+	_renderChildWithFlatList = ({ item, index }) => {
 		const { style, horizontal = true, contentContainerStyle, snapToAlignment, snapToInterval } = this.props;
 		const { fullscreen, animating, selectedImageHidden, selectedIdx } = this.state;
 
-		const getOpacity = (idx: number) => ({
-			opacity: selectedImageHidden && selectedIdx === idx ? 0 : 1
+		const getOpacity = (index: number) => ({
+			opacity: selectedImageHidden && selectedIdx === index ? 0 : 1
 		});
 
 		return (
 			<TouchableWithoutFeedback
-				key={`slider-image-${idx}`} // eslint-disable-line react/no-array-index-key
-				onPress={() => this.open(idx)}
+				key={`slider-image-${index}`} // eslint-disable-line react/no-array-index-key
+				onPress={() => this.open(index)}
 			>
 				<View
 					ref={(ref) => {
-						this.captureCarouselItem(ref, idx);
+						this.captureCarouselItem(ref, index);
 					}}
-					style={getOpacity(idx)}
+					style={getOpacity(index)}
 				>
 					{item}
 				</View>
@@ -424,12 +424,11 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		const getOpacity = (idx: number) => ({
 			opacity: selectedImageHidden && selectedIdx === idx ? 0 : 1
 		});
-
 		return (
-			<View style={style}>
+			<View style={{ padding: 5 }}>
 				<FlatList
-					ListHeaderComponent={this.renderDefaultHeader()}
-					_keyExtractor={this._keyExtractor}
+					ListHeaderComponent={this.renderDefaultHeader}
+					keyExtractor={this._keyExtractor}
 					data={this.getChildren()}
 					numColumns={4}
 					renderItem={this._renderChildWithFlatList}
