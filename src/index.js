@@ -59,7 +59,7 @@ type StateType = {|
 	slidesDown: boolean
 |};
 
-class ImageCarousel extends React.Component<PropsType, StateType> {
+class ImageCarousel extends React.PureComponent<PropsType, StateType> {
 	static defaultProps = {
 		zoomEnabled: true,
 		hideStatusBarOnOpen: true
@@ -390,13 +390,17 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		);
 	};
 
+	getOpacity = (index: number) => {
+		const { style, horizontal = true, contentContainerStyle, snapToAlignment, snapToInterval } = this.props;
+		const { fullscreen, animating, selectedImageHidden, selectedIdx } = this.state;
+		return {
+			opacity: selectedImageHidden && selectedIdx === index ? 0 : 1
+		};
+	};
+
 	_renderChildWithFlatList = ({ item, index }) => {
 		const { style, horizontal = true, contentContainerStyle, snapToAlignment, snapToInterval } = this.props;
 		const { fullscreen, animating, selectedImageHidden, selectedIdx } = this.state;
-
-		const getOpacity = (index: number) => ({
-			opacity: selectedImageHidden && selectedIdx === index ? 0 : 1
-		});
 
 		return (
 			<TouchableWithoutFeedback
@@ -407,7 +411,7 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 					ref={(ref) => {
 						this.captureCarouselItem(ref, index);
 					}}
-					style={getOpacity(index)}
+					style={this.getOpacity(index)}
 				>
 					{item}
 				</View>
@@ -415,7 +419,7 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		);
 	};
 
-	_keyExtractor = (item, index) => item;
+	_keyExtractor = (item, index) => index;
 
 	render() {
 		const { style, horizontal = true, contentContainerStyle, snapToAlignment, snapToInterval } = this.props;
@@ -424,6 +428,7 @@ class ImageCarousel extends React.Component<PropsType, StateType> {
 		const getOpacity = (idx: number) => ({
 			opacity: selectedImageHidden && selectedIdx === idx ? 0 : 1
 		});
+		console.log('GETCHILDREN', this.getChildren());
 		return (
 			<View style={{ padding: 5 }}>
 				<FlatList
